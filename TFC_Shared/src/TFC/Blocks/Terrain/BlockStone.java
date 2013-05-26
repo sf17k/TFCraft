@@ -127,6 +127,16 @@ public class BlockStone extends BlockCollapsable
 		super.harvestBlock(world, entityplayer, i, j, k, l);
 	}
 
+	private void tryAccidentalBreak(World world, int x, int y, int z, int md)
+	{
+		// break only if same type as original block
+		if(blockID == world.getBlockId(x, y, z) && md == world.getBlockMetadata(x, y, z))
+		{
+			//harvestBlock(world, null, x, y, z, md);
+			world.destroyBlock(x, y, z, true);
+		}
+	}
+	
 	@Override
 	public void onBlockDestroyedByPlayer(World world, int i, int j, int k, int l)
 	{
@@ -141,6 +151,20 @@ public class BlockStone extends BlockCollapsable
 			{
 				EntityItem item = new EntityItem(world, i, j, k, is);
 				world.spawnEntityInWorld(item);
+			}
+			
+			// destroy random adjacent blocks of the same kind
+			// TODO: should this go outside if(!world.isRemote)?
+			for(int ii = 0; ii < 2; ii++)
+			{
+				switch(random.nextInt(6)){
+					case 0: tryAccidentalBreak(world, i+1, j, k, l); break;
+					case 1: tryAccidentalBreak(world, i-1, j, k, l); break;
+					case 2: tryAccidentalBreak(world, i, j+1, k, l); break;
+					case 3: tryAccidentalBreak(world, i, j-1, k, l); break;
+					case 4: tryAccidentalBreak(world, i, j, k+1, l); break;
+					default: tryAccidentalBreak(world, i, j, k-1, l); break;
+				}
 			}
 		}
 	}
