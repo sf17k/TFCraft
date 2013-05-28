@@ -2,6 +2,7 @@ package TFC.Entities;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -85,7 +86,7 @@ public class EntityArrowTFC extends EntityArrow implements ICausesDamage
         }
     }
 
-    public EntityArrowTFC(World par1World, EntityLiving par2EntityLiving, float par3)
+    public EntityArrowTFC(World par1World, EntityLiving par2EntityLiving, float par3, float charge)
     {
         this(par1World);
         this.shootingEntity = par2EntityLiving;
@@ -95,6 +96,12 @@ public class EntityArrowTFC extends EntityArrow implements ICausesDamage
             this.canBePickedUp = 1;
         }
 
+        Random rand = new Random();
+        final float MAX_INACCURACY = 20.0F; //degrees
+        // bow hits peak power at 20.0F charge
+        float inaccuracy = MAX_INACCURACY * MathHelper.sin(Math.min(1.0F, Math.abs(charge / 20.0F - 1.0F)) * (float)Math.PI/2.0F);
+        float shotOffsetAngle = rand.nextFloat() * (float)Math.PI * 2.0F; //radians
+        
         this.setSize(0.5F, 0.5F);
         this.setLocationAndAngles(par2EntityLiving.posX, par2EntityLiving.posY + par2EntityLiving.getEyeHeight(), par2EntityLiving.posZ, par2EntityLiving.rotationYaw, par2EntityLiving.rotationPitch);
         this.posX -= MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F;
@@ -102,6 +109,8 @@ public class EntityArrowTFC extends EntityArrow implements ICausesDamage
         this.posZ -= MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F;
         this.setPosition(this.posX, this.posY, this.posZ);
         this.yOffset = 0.0F;
+        this.rotationPitch += MathHelper.sin(shotOffsetAngle) * inaccuracy;
+        this.rotationYaw += MathHelper.cos(shotOffsetAngle) * inaccuracy;
         this.motionX = -MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI);
         this.motionZ = MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI);
         this.motionY = (-MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI));

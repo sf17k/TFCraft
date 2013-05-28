@@ -64,7 +64,7 @@ public class ItemCustomBow extends ItemBow implements ISize
                 f = 1.0F;
             }
 
-            EntityArrowTFC entityarrow = new EntityArrowTFC(par2World, par3EntityPlayer, f * 2.0F);
+            EntityArrowTFC entityarrow = new EntityArrowTFC(par2World, par3EntityPlayer, f * 2.0F, j);
 
             if (f == 1.0F)
             {
